@@ -4,8 +4,6 @@ on:
   schedule:
     push:
       branches: main
-    # 한국시간으로 0시 0분에 작업 발생
-    cron: '* * * * *'
 
 jobs:
   alert:
