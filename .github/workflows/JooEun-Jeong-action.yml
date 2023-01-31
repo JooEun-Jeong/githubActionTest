@@ -13,10 +13,13 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
-      - name: Push alarm to Slack
+      - name: get current path info
         shell: bash
         run: |
           pwd >> new.txt
+      - name: Push alarm to Slack
+        shell: bash
+        run: |
           chmod +x count.sh
           ./count      
       - name: Update README.md
