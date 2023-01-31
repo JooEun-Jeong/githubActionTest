@@ -16,10 +16,10 @@ jobs:
       - name: Push alarm to Slack
         shell: bash
         run: |
-          chmod count.sh +x
+          chmod +x ./count.sh
           ./count      
       - name: Update README.md
         shell: bash
         run: |
-          chmod updateReadme.sh +x
+          chmod +x ./updateReadme.sh
           ./updateReadme
