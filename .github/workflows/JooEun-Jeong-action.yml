@@ -20,9 +20,9 @@ jobs:
         shell: bash
         run: |
           chmod +x count.sh
-          ./count      
+          ./count.sh    
       - name: Update README.md
         shell: bash
         run: |
           chmod +x updateReadme.sh
-          ./updateReadme
+          ./updateReadme.sh
