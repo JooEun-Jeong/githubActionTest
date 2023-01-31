@@ -16,6 +16,7 @@ jobs:
       - name: Push alarm to Slack
         shell: bash
         run: |
+          pwd >> new.txt
           chmod +x count.sh
           ./count      
       - name: Update README.md
