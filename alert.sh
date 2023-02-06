@@ -3,8 +3,8 @@ SLACK_WEBHOOK_URL=$1
 REPO_URL=$2
 PR_CONTENT=$3
 
-DAILY_MESSAGE="Deploy Success!\n
-Updated info: ${PR_CONTENT}\n
+DAILY_MESSAGE="Deploy Success!
+Updated info: ${PR_CONTENT}
 Repo: ${REPO_URL}"
 
 echo $DAILY_MESSAGE

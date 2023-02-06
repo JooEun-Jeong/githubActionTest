@@ -78,7 +78,7 @@ jobs:
           # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           
           chmod +x alert.sh
-          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL ${{ steps.pr_info.outputs.pull_request_message }}
+          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_message }}"
 
       # Update README file
       - name: Update README.md
