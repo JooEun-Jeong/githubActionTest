@@ -37,7 +37,7 @@ jobs:
           GITHUB_REPO_URL=$(echo $GITHUB_REPO | jq '.repositoryUrl')
           echo $GITHUB_REPO_URL
           chmod +x count.sh
-          ./count.sh "$SLACK_WEBHOOK_URL" "$GITHUB_REPO_URL"
+          ./count.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
       - name: get current path info
         shell: bash
         run: |
