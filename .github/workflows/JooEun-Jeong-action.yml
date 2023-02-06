@@ -18,9 +18,11 @@ jobs:
           pwd >> new.txt
       - name: Push alarm to Slack
         shell: bash
+        env:
+          URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           chmod +x count.sh
-          ./count.sh    
+          ./count.sh "$URL"
       - name: Update README.md
         shell: bash
         run: |
