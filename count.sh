@@ -13,7 +13,7 @@ if [ $? -eq 1 ];then
   MENT="문제를 하나라도 푸세요!"
   COUNT=0
 else
-  if [ $COUNT -ge 1 -a $COUNT lt 2 ]
+  if [ $COUNT -ge 1 -a $COUNT -lt 2 ]
   then
     MENT="문제를 하나 더 푸는게 어떨까요?"
   else
