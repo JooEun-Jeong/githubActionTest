@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: get github repo url
         env:
-          GITHUB_REPO_URL: ${{ toJson(github)[repositoryUrl] }}
+          GITHUB_REPO_URL: ${{ toJson(github).repositoryUrl }}
         run: echo "$GITHUB_REPO_URL"
       - uses: actions/checkout@v3
       - name: prepare slack-send environment
