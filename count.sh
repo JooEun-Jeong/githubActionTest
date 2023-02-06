@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # get current info
 DATE=$(date "+%Y.%m.%d")
 DAY=$(date "+%d")
