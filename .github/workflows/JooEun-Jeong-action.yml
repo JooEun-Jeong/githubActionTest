@@ -23,7 +23,6 @@ jobs:
         run: |
           chmod +x count.sh
           ./count.sh "$URL"
-          echo "$URL"
       - name: Update README.md
         shell: bash
         run: |
