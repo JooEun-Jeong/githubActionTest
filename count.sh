@@ -1,4 +1,5 @@
 # get current info
+#sec!!!!
 SLACK_WEBHOOK_URL=$1
 DATE=$(date "+%Y.%m.%d")
 DAY=$(date "+%d")
