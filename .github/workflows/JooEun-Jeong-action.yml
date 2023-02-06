@@ -28,16 +28,16 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: send an alarm
         shell: bash
-        run: |
-          chmod +x count.sh
-          ./count.sh "$SLACK_WEBHOOK_URL" "$GITHUB_REPO_URL"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPO_URL: ${{ toJson(github) }}
+        run: |
+          chmod +x count.sh
+          ./count.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
       - name: get current path info
         shell: bash
         run: |
-          pwd >> new.txt
+          pwd
       - name: Update README.md
         shell: bash
         run: |
