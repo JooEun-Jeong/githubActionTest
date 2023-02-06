@@ -18,18 +18,18 @@ jobs:
           sudo apt install jq
       - uses: actions/checkout@v3
 
-      # Parse Commit 
-      - name: get commit information
-        id: commit_info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
-          echo "commit_message=${{ github.event.head_commit.message }}"  >> $GITHUB_OUTPUT
+      # # Parse Commit 
+      # - name: get commit information
+      #   id: commit_info
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+      #     echo "commit_message=${{ github.event.head_commit.message }}"  >> $GITHUB_OUTPUT
       
-      - name: output Commit Message
-        run: |
-          echo "Commit message is: ${{ steps.commit_info.outputs.commit_message }}"
+      # - name: output Commit Message
+      #   run: |
+      #     echo "Commit message is: ${{ steps.commit_info.outputs.commit_message }}"
 
       # Parse PR
       - name: get Pull Request Information
