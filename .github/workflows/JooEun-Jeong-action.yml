@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: slackapi/slack-github-action@v1.23.0
       - name: make alarm content
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
