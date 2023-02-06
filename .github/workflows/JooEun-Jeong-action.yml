@@ -25,13 +25,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::set-output name=commit_sha::${{ github.sha }}"
-          echo "::set-output name=commit_message::${{ github.event.head_commit.message }}"
-          # echo "{commit_sha}={ ${{ github.sha }} }"
-          # echo "{commit_message}={ ${{ github.event.head_commit.message }} }"
+          # echo "::set-output name=commit_sha::${{ github.sha }}"
+          # echo "::set-output name=commit_message::${{ github.event.head_commit.message }}"
+          echo "commit_sha={ ${{ github.sha }} }"
+          echo "commit_message={ ${{ github.event.head_commit.message }} }"
       
       - name: Output Commit Message
         run: |
+          # echo "Message is: ${{ steps.commit_info.outputs.commit_message }}"
           echo "Message is: ${{ steps.commit_info.outputs.commit_message }}"
 
       - name: prepare for a slack-send environment
