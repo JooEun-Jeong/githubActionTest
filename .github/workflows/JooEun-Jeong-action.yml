@@ -57,11 +57,11 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       
-      # - name: fail component
-      #   id: 
-      #   uses: muinmomin/webhook-action@v1.0.0
-      #   run: |
-      #     echo this is a fail component
+      - name: fail component
+        id: 
+        uses: muinmomin/webhook-action@v1.0.0
+        run: |
+          echo this is a fail component
 
       - name: SUCCESS _ send a slack alarm
         shell: bash
