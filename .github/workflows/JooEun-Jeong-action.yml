@@ -1,17 +1,17 @@
-name: PS Count
+name: Alert Deploy Status
 
 on:
   #schedule:
   #  - cron: '* * * * *'
 
   pull_request:
-    types: ['closed']
+    types: ['opened','closed'] ## 풀자 opend 지우기
   push:
     branches: ['main']
 
 jobs:
   alert_when_merged:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true ## 풀자
     runs-on: ubuntu-latest
     steps:
       - name: prepare to get github repo url
@@ -33,17 +33,17 @@ jobs:
       #     echo "Commit message is: ${{ steps.commit_info.outputs.commit_message }}"
 
       # Parse PR
-      - name: get Pull Request Information
+      - name: get Pull Request Title
         id: pr_info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_message=\"${{ github.event.pull_request.body }}\"" >> $GITHUB_OUTPUT
+          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
 
-      - name: output Pull Request Message
+      - name: print Pull Request Title on cli
         run: |
-          echo "Pull Request message is: ${{ steps.pr_info.outputs.pull_request_message }}"
+          echo "Pull Request title is: ${{ steps.pr_info.outputs.pull_request_title }}"
 
       # Send slack alarm
       - name: prepare for a slack-send environment
@@ -52,7 +52,7 @@ jobs:
         with:
           payload: |
             {
-              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "There is an update!", "icon_emoji": ":seal:"
+              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "*UPDATE ALARM*", "icon_emoji": ":seal:"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -77,8 +77,8 @@ jobs:
           # GITHUB_REPO_URL_pre=${{ github.repositoryUrl }}
           # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           
-          chmod +x alert.sh
-          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL ${{ steps.pr_info.outputs.pull_request_message }}
+          chmod +x alertSuccess.sh
+          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
 
       # Update README file
       - name: Update README.md
@@ -86,3 +86,20 @@ jobs:
         run: |
           chmod +x updateReadme.sh
           ./updateReadme.sh
+
+  when_deploy_failed:
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Failed _ send a slack alarm
+        shell: bash
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_REPO: ${{ toJson(github) }}
+        run: |  
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
+          
+          chmod +x alertFailure.sh
+          ./alertFailure.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
