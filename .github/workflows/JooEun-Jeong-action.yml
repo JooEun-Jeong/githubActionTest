@@ -93,7 +93,6 @@ jobs:
 
           chmod +x alertSuccess.sh
           ./alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
-          exit 1
 
       # Update README file
       - name: Update README.md
