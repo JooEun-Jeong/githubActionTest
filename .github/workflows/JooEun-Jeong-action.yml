@@ -5,12 +5,13 @@ on:
   #  - cron: '* * * * *'
 
   pull_request_target:
-    types: ['opened']
+    types: ['closed']
   push:
     branches: ['main']
 
 jobs:
-  alert:
+  alert_when_merged:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: prepare to get github repo url
@@ -77,7 +78,7 @@ jobs:
           # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           
           chmod +x alert.sh
-          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
+          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL ${{ steps.pr_info.outputs.pull_request_message }}
 
       # Update README file
       - name: Update README.md
