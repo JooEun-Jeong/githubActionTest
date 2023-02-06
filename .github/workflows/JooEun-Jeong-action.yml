@@ -20,14 +20,17 @@ jobs:
           sudo apt install jq
       - uses: actions/checkout@v3
 
-      - name: get pull request information
-        id: pr_info
+      - name: get commit information
+        id: commit_info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "{$pr_number}={ ${{ github.event.number }} }"
-          echo this is number $pr_number
-          echo "${{ github.event.pull_request.body }}"
+          echo "{commit_sha}={ ${{ github.sha }} }"
+          echo "{commit_message}={ ${{ github.event.head_commit.message }} }"
+      
+      - name: Output Commit Message
+        run: |
+          echo "Message is: ${{ steps.commit_info.outputs.commit_message }}"
 
       - name: prepare for a slack-send environment
         id: slack
