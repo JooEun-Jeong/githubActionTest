@@ -6,11 +6,15 @@ on:
   #  - cron: '* * * * *'
   push:
     branches: ['main']
+  deployment
 
 jobs:
   alert:
     runs-on: ubuntu-latest
     steps:
+      - name: get github repo url
+        env:
+          GITHUB_REPO_URL: ${{ toJson(github).repositoryUrl }}
       - uses: actions/checkout@v3
       - name: prepare slack-send environment
         id: slack
@@ -18,7 +22,7 @@ jobs:
         with:
           payload: |
             {
-              "channel": "#test-for-github-action", "username": "Ghost", "text": "hello!", "icon_emoji": ":smile:"
+              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "hello!", "icon_emoji": ":seal:"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -26,20 +30,9 @@ jobs:
         shell: bash
         run: |
           chmod +x count.sh
-          ./count.sh "$SLACK_WEBHOOK_URL"
+          ./count.sh "$SLACK_WEBHOOK_URL" "$GITHUB_REPO_URL"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      # - name: prepare slack-send environment
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.23.0
-      #   with:
-      #     payload: |
-      #       {
-      #         "channel": "#test-for-github-action", "username": "Ghost", "text": "hello there", "icon_emoji": ":smile:"
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: get current path info
         shell: bash
         run: |
