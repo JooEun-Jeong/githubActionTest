@@ -39,7 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_title=\"${{ github.event.pull_request.head }}\"" >> $GITHUB_OUTPUT
+          echo "pull_request_title=\"${{ github.event.pull_request.head.ref }}\"" >> $GITHUB_OUTPUT
 
       - name: output Pull Request Title
         run: |
