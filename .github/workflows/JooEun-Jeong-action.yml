@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: slackapi/slack-github-action@v1.23.0
       - name: make alarm content
         shell: bash
         env:
@@ -19,16 +20,16 @@ jobs:
         run: |
           chmod +x count.sh
           ./count.sh "$SLACK_WEBHOOK_URL"
-      - name: prepare slack-send environment
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          payload: |
-            {
-              "channel": "#test-for-github-action", "username": "Ghost", "text": "hello there", "icon_emoji": ":smile:"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # - name: prepare slack-send environment
+      #   id: slack
+      #   uses: slackapi/slack-github-action@v1.23.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "channel": "#test-for-github-action", "username": "Ghost", "text": "hello there", "icon_emoji": ":smile:"
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: get current path info
         shell: bash
         run: |
