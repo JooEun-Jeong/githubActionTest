@@ -15,9 +15,9 @@ jobs:
   alert:
     runs-on: ubuntu-latest
     steps:
-      # - name: prepare to get github repo url
-      #   run: |
-      #     sudo apt install jq
+      - name: prepare to get github repo url
+        run: |
+          sudo apt install jq
       - uses: actions/checkout@v3
 
       - name: get commit information
@@ -25,12 +25,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "{$commit_sha}={ ${{ github.sha }} }"
-          echo "{$commit_message}={ ${{ github.event.head_commit.message }} }"
+          echo "{commit_sha}={ ${{ github.sha }} }"
+          echo "{commit_message}={ ${{ github.event.head_commit.message }} }" >> $COMMIT_M
       
       - name: Output Commit Message
         run: |
-          echo "Message is: ${{ steps.commit_info.outputs.commit_message }}"
+          echo "Message is: ${{ steps.commit_info.outputs.COMMIT_M }}"
 
       - name: prepare for a slack-send environment
         id: slack
@@ -49,11 +49,14 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPO: ${{ toJson(github) }}
         run: |  
-          # GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # # "와 git:// 삭제
-          # GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
-          GITHUB_REPO_URL_pre=${{ github.repositoryUrl }}
-          GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
+          
+          # # git://이 붙어있는 경우.
+          # GITHUB_REPO_URL_pre=${{ github.repositoryUrl }}
+          # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
+          
           chmod +x alert.sh
           ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
 
