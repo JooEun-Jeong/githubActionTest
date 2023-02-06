@@ -23,5 +23,6 @@ REPO_URL=$2
 # DAILY_MESSAGE="현재일($TARGET_FILE_NAME)기준으로, ${COUNT}문제를 풀었어요\n"
 
 DAILY_MESSAGE="Deploy 성공했습니다!\nRepo: ${REPO_URL}"
+echo $DAILY_MESSAGE
 # 슬랙 채널로 메시지 요청
 curl -X POST --data-urlencode "payload={\"channel\": \"#test-for-github-action\", \"username\": \"Alert Manager\", \"text\": \"${DAILY_MESSAGE}\", \"icon_emoji\": \":seal:\"}" "$SLACK_WEBHOOK_URL"
