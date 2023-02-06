@@ -35,10 +35,8 @@ jobs:
           GITHUB_REPO: ${{ toJson(github) }}
         run: |
           GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # 첫번째 " 삭제
-          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:1}")
-          # 마지막 " 삭제
-          GITHUB_REPO_URL=$(echo ${GITHUB_REPO_URL#\"})
+          # 첫번째, 마지막 " 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:1:-1}")
           echo $GITHUB_REPO_URL
           chmod +x count.sh
           ./count.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
