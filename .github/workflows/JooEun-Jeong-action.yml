@@ -13,18 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: prepare slack-send environment
+        id: slack
         uses: slackapi/slack-github-action@v1.23.0
         env:
           URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: get current path info
-        shell: bash
-        run: |
-          pwd >> new.txt
       - name: Push alarm to Slack
         shell: bash
         run: |
           chmod +x count.sh
           ./count.sh "$URL"
+      - name: get current path info
+        shell: bash
+        run: |
+          pwd >> new.txt
       - name: Update README.md
         shell: bash
         run: |
