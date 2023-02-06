@@ -3,6 +3,7 @@ name: Alert Deploy Status
 on:
   #schedule:
   #  - cron: '* * * * *'
+  # hoho
 
   pull_request:
     types: ['opened','closed'] ## 풀자 opend 지우기
