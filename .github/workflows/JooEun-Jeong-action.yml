@@ -15,9 +15,9 @@ jobs:
   alert:
     runs-on: ubuntu-latest
     steps:
-      - name: prepare to get github repo url
-        run: |
-          sudo apt install jq
+      # - name: prepare to get github repo url
+      #   run: |
+      #     sudo apt install jq
       - uses: actions/checkout@v3
 
       - name: get commit information
@@ -25,8 +25,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "{commit_sha}={ ${{ github.sha }} }"
-          echo "{commit_message}={ ${{ github.event.head_commit.message }} }"
+          echo "{$commit_sha}={ ${{ github.sha }} }"
+          echo "{$commit_message}={ ${{ github.event.head_commit.message }} }"
       
       - name: Output Commit Message
         run: |
@@ -52,8 +52,8 @@ jobs:
           # GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
           # # "와 git:// 삭제
           # GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
-          GITHUB_REPO_URL=${{ github.repositoryUrl }}
-          echo $GITHUB_REPO_URL
+          GITHUB_REPO_URL_pre=${{ github.repositoryUrl }}
+          GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           chmod +x alert.sh
           ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
 
