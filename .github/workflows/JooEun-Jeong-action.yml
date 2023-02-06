@@ -20,21 +20,33 @@ jobs:
           sudo apt install jq
       - uses: actions/checkout@v3
 
+      # Parse Commit 
       - name: get commit information
         id: commit_info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # echo "::set-output name=commit_sha::${{ github.sha }}"
-          # echo "::set-output name=commit_message::${{ github.event.head_commit.message }}"
           echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
           echo "commit_message=${{ github.event.head_commit.message }}"  >> $GITHUB_OUTPUT
       
-      - name: Output Commit Message
+      - name: output Commit Message
         run: |
-          # echo "Message is: ${{ steps.commit_info.outputs.commit_message }}"
-          echo " Hola! Message is: ${{ steps.commit_info.outputs.commit_message }}"
+          echo "Commit message is: ${{ steps.commit_info.outputs.commit_message }}"
 
+      # Parse PR
+      - name: get Pull Request Information
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          echo "pull_request_message=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+
+      - name: output Pull Request Message
+        run: |
+          echo "Pull Request message is: ${{ steps.pr_info.outputs.pull_request_message }}"
+
+      # Send slack alarm
       - name: prepare for a slack-send environment
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
@@ -69,6 +81,7 @@ jobs:
           chmod +x alert.sh
           ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
 
+      # Update README file
       - name: Update README.md
         shell: bash
         run: |
