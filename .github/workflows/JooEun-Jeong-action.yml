@@ -38,7 +38,7 @@ jobs:
           # 첫번째 " 삭제
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:1}")
           # 마지막 " 삭제
-          GITHUB_REPO_URL=$(echo ${GITHUB_REPO_URL#"})
+          GITHUB_REPO_URL=$(echo ${GITHUB_REPO_URL#\"})
           echo $GITHUB_REPO_URL
           chmod +x count.sh
           ./count.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
