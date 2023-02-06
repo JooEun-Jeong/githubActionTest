@@ -40,6 +40,9 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       
+      #######################################
+      ### 여기에 docker 내용을 넣어주세요 #####
+      #######################################
       # - name: fail component_get pr body
       #   id: failed
       #   env:
@@ -49,8 +52,11 @@ jobs:
       #     echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
       #     echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
+  alert_deploy_failed:
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Failed send a slack alarm
-        if: ${{ failure() }}
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -61,9 +67,12 @@ jobs:
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
           
           chmod +x alertFailure.sh
-          ./alertFailure.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
+          ./alertFailure.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.alert_deploy_status.outputs.pull_request_title }}"
           exit 1
 
+  alert_deploy_success:
+    runs-on: ubuntu-latest
+    steps:
       - name: SUCCESS send a slack alarm
         shell: bash
         env:
@@ -75,7 +84,7 @@ jobs:
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
           
           chmod +x alertSuccess.sh
-          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
+          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.alert_deploy_status.outputs.pull_request_title }}"
 
       # Update README file
       - name: Update README.md
