@@ -5,13 +5,13 @@ on:
   #  - cron: '* * * * *'
 
   pull_request:
-    types: ['closed']
+    types: ['opened','closed'] ## 풀자 opend 지우기
   push:
     branches: ['main']
 
 jobs:
   alert_when_merged:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true ## 풀자
     runs-on: ubuntu-latest
     steps:
       - name: prepare to get github repo url
@@ -39,11 +39,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_message=\"${{ github.event.pull_request.body }}\"" >> $GITHUB_OUTPUT
+          echo "pull_request_title=\"${{ github.event.pull_request.head }}\"" >> $GITHUB_OUTPUT
 
-      - name: output Pull Request Message
+      - name: output Pull Request Title
         run: |
-          echo "Pull Request message is: ${{ steps.pr_info.outputs.pull_request_message }}"
+          echo "Pull Request title is: ${{ steps.pr_info.outputs.pull_request_title }}"
 
       # Send slack alarm
       - name: prepare for a slack-send environment
@@ -78,7 +78,7 @@ jobs:
           # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           
           chmod +x alert.sh
-          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL ${{ steps.pr_info.outputs.pull_request_message }}
+          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL ${{ steps.pr_info.outputs.pull_request_title }}
 
       # Update README file
       - name: Update README.md
