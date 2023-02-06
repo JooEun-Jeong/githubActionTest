@@ -9,10 +9,10 @@ TARGET_FILE_NAME="${MON}${DAY}"
 TARGET_FILE_PATH="JooEun/${TARGET_FILE_NAME}"
 COUNT=$(ls -l $TARGET_FILE_PATH | grep -E "(*.py|*.cpp|*.c)" | wc -l | sed 's/ //g')
 MENT=""
-if [$COUNT -lt 1]
+if [ $COUNT -lt 1 ]
 then
   MENT="문제를 하나라도 푸세요!"
-elif [$COUNT -ge 1 -a $COUNT lt 2]
+elif[ $COUNT -ge 1 -a $COUNT lt 2 ]
 then
   MENT="문제를 하나 더 푸는게 어떨까요?"
 else
