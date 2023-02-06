@@ -32,9 +32,10 @@ jobs:
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPO_URL: ${{ toJson(github) }}
+          GITHUB_REPO: ${{ toJson(github) }}
         run: |
-          echo $GITHUB_REPO_URL | jq '.repositoryUrl'
+          GITHUB_REPO_URL=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          echo GITHUB_REPO_URL
           chmod +x count.sh
           ./count.sh "$SLACK_WEBHOOK_URL" "$GITHUB_REPO_URL"
       - name: get current path info
