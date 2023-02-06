@@ -25,8 +25,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::set-output name=pull_request_number::${{ github.event.number }}"
-          echo "::set-output name=pull_request_message::${{ github.event.pull_request.body }}"
+          echo "{name}={value}" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
+          echo "${{ github.event.pull_request.body }}"
 
       - name: prepare for a slack-send environment
         id: slack
