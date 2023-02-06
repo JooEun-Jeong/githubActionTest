@@ -54,6 +54,7 @@ jobs:
 
   alert_deploy_failed:
     if: ${{ failure() }}
+    needs: alert_deploy_status
     runs-on: ubuntu-latest
     steps:
       - name: Failed send a slack alarm
@@ -72,6 +73,7 @@ jobs:
 
   alert_deploy_success:
     runs-on: ubuntu-latest
+    needs: alert_deploy_failed
     steps:
       - name: SUCCESS send a slack alarm
         shell: bash
