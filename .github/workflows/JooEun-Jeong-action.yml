@@ -53,7 +53,7 @@ jobs:
         with:
           payload: |
             {
-              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "*UPDATE ALARM*", "icon_emoji": ":seal:"
+              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "*===UPDATE ALARM===*", "icon_emoji": ":seal:"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -63,9 +63,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
-          # echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
           exit 1
+          echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+          echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
       - name: SUCCESS _ send a slack alarm
         shell: bash
