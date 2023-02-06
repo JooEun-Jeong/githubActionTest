@@ -3,12 +3,11 @@ name: Alert Deploy Status
 on:
   pull_request:
     types: ['closed']
-  push:
-    branches: ['main']
 
+# job is triggered only when PR is closed and merged to the 'main' branch
 jobs:
-  alert_when_merged:
-    # if: github.event.pull_request.merged == true
+  alert_deploy_status:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: prepare to get github repo url
