@@ -15,6 +15,11 @@ jobs:
       - name: prepare slack-send environment
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "channel": "#test-for-github-action", "username": "Ghost", "text": "hello!", "icon_emoji": ":smile:"
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: send an alarm
