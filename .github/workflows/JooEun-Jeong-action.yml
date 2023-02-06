@@ -10,12 +10,6 @@ jobs:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
     steps:
-      - name: prepare to get github repo url
-        run: |
-          sudo apt install jq
-          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # "와 git:// 삭제
-          echo "GITHUB_REPO_URL=${(echo "${GITHUB_REPO_URL_w:7:-1}")}" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
 
       # Parse PR
@@ -60,14 +54,21 @@ jobs:
     needs: prepare_alert_deploy_status # docker job으로 이름 변경해야됨
     runs-on: ubuntu-latest
     steps:
+      - name: prepare to get github repo url
+        run: |
+          sudo apt install jq
       - name: Failed to send a slack alarm
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPO: ${{ toJson(github) }}
         run: |  
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
+          
           chmod +x alertFailure.sh
-          ./alertFailure.sh "$SLACK_WEBHOOK_URL" ${{ steps.prepare_alert_deploy_status.outputs.GITHUB_REPO_URL }} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
+          ./alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
           exit 1
 
   alert_deploy_success:
@@ -75,14 +76,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare_alert_deploy_status # docker job으로 이름 변경해야됨
     steps:
+      - name: prepare to get github repo url
+        run: |
+          sudo apt install jq
       - name: Succeed to send a slack alarm
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPO: ${{ toJson(github) }}
         run: |  
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
+
           chmod +x alertSuccess.sh
-          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" ${{ steps.prepare_alert_deploy_status.outputs.GITHUB_REPO_URL }} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
+          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
           exit 1
 
       # Update README file
