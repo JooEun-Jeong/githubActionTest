@@ -49,9 +49,10 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPO: ${{ toJson(github) }}
         run: |  
-          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # "와 git:// 삭제
-          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
+          # GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # # "와 git:// 삭제
+          # GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
+          GITHUB_REPO_URL=${{ github.repositoryUrl }}
           echo $GITHUB_REPO_URL
           chmod +x alert.sh
           ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
