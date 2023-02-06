@@ -67,6 +67,21 @@ jobs:
           echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
           echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
+      - name: Failed _ send a slack alarm
+        if: ${{ failure() }}
+        shell: bash
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_REPO: ${{ toJson(github) }}
+        run: |  
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
+          
+          chmod +x alertFailure.sh
+          ./alertFailure.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
+          exit 1
+
       - name: SUCCESS _ send a slack alarm
         shell: bash
         env:
@@ -90,20 +105,3 @@ jobs:
         run: |
           chmod +x updateReadme.sh
           ./updateReadme.sh
-
-  when_deploy_failed:
-    runs-on: ubuntu-latest
-    if: failure()
-    steps:
-      - name: Failed _ send a slack alarm
-        shell: bash
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPO: ${{ toJson(github) }}
-        run: |  
-          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # "와 git:// 삭제
-          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
-          
-          chmod +x alertFailure.sh
-          ./alertFailure.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
