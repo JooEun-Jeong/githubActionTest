@@ -57,8 +57,8 @@ jobs:
           # "와 git:// 삭제
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
           
-          chmod +x alertFailure.sh
-          ./alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
+          chmod +x tools/alertFailure.sh
+          tools/alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
 
   alert_deploy_success:
     if: ${{ success() }} # 이전의 job이 성공했을 경우 실행됨
@@ -89,8 +89,8 @@ jobs:
           # "와 git:// 삭제
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
 
-          chmod +x alertSuccess.sh
-          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
+          chmod +x tools/alertSuccess.sh
+          tools/alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
 
       # # Update README file
       # - name: Update README.md
