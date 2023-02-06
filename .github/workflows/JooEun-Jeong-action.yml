@@ -23,7 +23,7 @@ jobs:
         with:
           payload-file-path: "./payload.json"
         env:
-          URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: get current path info
         shell: bash
         run: |
