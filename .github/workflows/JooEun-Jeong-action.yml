@@ -16,7 +16,7 @@ jobs:
           GITHUB_REPO_URL: ${{ toJson(github) }}
         run: |
           sudo apt install jq
-          jq '.repositoryUrl' $GITHUB_REPO_URL
+          echo $GITHUB_REPO_URL | jq '.repositoryUrl'
       - uses: actions/checkout@v3
       - name: prepare slack-send environment
         id: slack
