@@ -2,8 +2,12 @@ name: PS Count
 
 on:
   #schedule:
-    # 한국시간으로 0시 0분에 작업 발생
   #  - cron: '* * * * *'
+
+  # pull_request_target:
+  #   types: ['opened']
+  #   branches: ['main']
+
   push:
     branches: ['main']
 
@@ -15,7 +19,16 @@ jobs:
         run: |
           sudo apt install jq
       - uses: actions/checkout@v3
-      - name: prepare slack-send environment
+
+      - name: get pull request information
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "::set-output name=pull_request_number::${{ github.event.number }}"
+          echo "::set-output name=pull_request_message::${{ github.event.pull_request.body }}"
+
+      - name: prepare for a slack-send environment
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
@@ -25,7 +38,8 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: send an alarm
+
+      - name: SUCCESS _ send a slack alarm
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -37,10 +51,7 @@ jobs:
           echo $GITHUB_REPO_URL
           chmod +x alert.sh
           ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
-      - name: get current path info
-        shell: bash
-        run: |
-          pwd
+
       - name: Update README.md
         shell: bash
         run: |
