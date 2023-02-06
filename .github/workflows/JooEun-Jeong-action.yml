@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: get github repo url
         env:
-          GITHUB_REPO_URL: ${{ toJson(github) }}
-        run: echo "$(GITHUB_REPO_URL[repositoryUrl])"
+          GITHUB_REPO_URL: ${{ toJson(github) }}.repositoryUrl
+        run: echo "$GITHUB_REPO_URL"
       - uses: actions/checkout@v3
       - name: prepare slack-send environment
         id: slack
@@ -30,8 +30,12 @@ jobs:
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPO_URL: ${{ toJson(github) }}
+          GITHUB_REPO_URL: ${{ toJson(github) }}.repositoryUrl
         run: |
+          # wget http://stedolan.github.io/jq/download/linux64/jq
+          # chmod +x ./jq
+          # sudo cp jq /usr/bin
+
           chmod +x count.sh
           ./count.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL
       - name: get current path info
