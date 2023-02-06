@@ -6,7 +6,6 @@ on:
   #  - cron: '* * * * *'
   push:
     branches: ['main']
-  deployment
 
 jobs:
   alert:
