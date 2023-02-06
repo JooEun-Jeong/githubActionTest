@@ -12,18 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Parse PR
-      - name: get Pull Request Title
-        id: pr_info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+      # # Parse PR
+      # - name: get Pull Request Title
+      #   id: pr_info
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+      #     echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
 
-      - name: print Pull Request Title on cli
-        run: |
-          echo "Pull Request title is: ${{ steps.pr_info.outputs.pull_request_title }}"
+      # - name: print Pull Request Title on cli
+      #   run: |
+      #     echo "Pull Request title is: ${{ steps.pr_info.outputs.pull_request_title }}"
 
       # Send slack alarm
       - name: prepare for a slack-send environment
@@ -58,6 +58,15 @@ jobs:
       - name: prepare to get github repo url
         run: |
           sudo apt install jq
+      # Parse PR
+      - name: get Pull Request Title
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+
       - name: Failed to send a slack alarm
         shell: bash
         env:
@@ -69,7 +78,7 @@ jobs:
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
           
           chmod +x alertFailure.sh
-          ./alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
+          ./alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
           exit 1
 
   alert_deploy_success:
@@ -81,6 +90,15 @@ jobs:
       - name: prepare to get github repo url
         run: |
           sudo apt install jq
+      # Parse PR
+      - name: get Pull Request Title
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+
       - name: Succeed to send a slack alarm
         shell: bash
         env:
@@ -92,7 +110,7 @@ jobs:
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
 
           chmod +x alertSuccess.sh
-          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.prepare_alert_deploy_status.outputs.pull_request_title }}"
+          ./alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
 
       # Update README file
       - name: Update README.md
