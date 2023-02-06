@@ -1,37 +1,20 @@
 name: Alert Deploy Status
 
 on:
-  #schedule:
-  #  - cron: '* * * * *'
-  # hoho
-
   pull_request:
-    types: ['opened','closed'] ## 풀자 opend 지우기
+    types: ['closed']
   push:
     branches: ['main']
 
 jobs:
   alert_when_merged:
-    # if: github.event.pull_request.merged == true ## 풀자
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: prepare to get github repo url
         run: |
           sudo apt install jq
       - uses: actions/checkout@v3
-
-      # # Parse Commit 
-      # - name: get commit information
-      #   id: commit_info
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
-      #     echo "commit_message=${{ github.event.head_commit.message }}"  >> $GITHUB_OUTPUT
-      
-      # - name: output Commit Message
-      #   run: |
-      #     echo "Commit message is: ${{ steps.commit_info.outputs.commit_message }}"
 
       # Parse PR
       - name: get Pull Request Title
@@ -67,7 +50,7 @@ jobs:
           echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
           echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
-      - name: Failed _ send a slack alarm
+      - name: Failed send a slack alarm
         if: ${{ failure() }}
         shell: bash
         env:
@@ -82,7 +65,7 @@ jobs:
           ./alertFailure.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
           exit 1
 
-      - name: SUCCESS _ send a slack alarm
+      - name: SUCCESS send a slack alarm
         shell: bash
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -91,10 +74,6 @@ jobs:
           GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
           # "와 git:// 삭제
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}") 
-          
-          # # git://이 붙어있는 경우.
-          # GITHUB_REPO_URL_pre=${{ github.repositoryUrl }}
-          # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           
           chmod +x alertSuccess.sh
           ./alertSuccess.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
