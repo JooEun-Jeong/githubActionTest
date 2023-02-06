@@ -33,7 +33,7 @@ jobs:
           ./count.sh "$SLACK_WEBHOOK_URL" "$GITHUB_REPO_URL"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPO_URL: ${{ toJson(github)['repositoryUrl'] }}
+          GITHUB_REPO_URL: ${{ toJson(github) }}
       - name: get current path info
         shell: bash
         run: |
