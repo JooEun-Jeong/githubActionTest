@@ -58,11 +58,13 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       
-      - name: fail component
-        id: 
-        uses: muinmomin/webhook-action@v1.0.0
+      - name: fail component_get pr body
+        id: failed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo this is a fail component
+          echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+          echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
       - name: SUCCESS _ send a slack alarm
         shell: bash
