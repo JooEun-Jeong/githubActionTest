@@ -22,4 +22,4 @@ else
 fi
 DAILY_MESSAGE="현재일($NOW_DATE)기준으로, ${COUNT}문제를 풀었어요\n"
 # 슬랙 채널로 메시지 요청
-curl -X POST --data-urlencode "payload={\"channel\": \"#test-for-github-action\", \"username\": \"JooEun\", \"text\": \"${DAILY_MESSAGE}\", \"icon_emoji\": \":smile:\"}" {% raw %}${{ secrets.SLACK_WEBHOOK_URL }}{% endraw %}
+curl -X POST --data-urlencode "payload={\"channel\": \"#test-for-github-action\", \"username\": \"JooEun\", \"text\": \"${DAILY_MESSAGE}\", \"icon_emoji\": \":smile:\"}" {% raw %}$(( secrets.SLACK_WEBHOOK_URL )){% endraw %}
