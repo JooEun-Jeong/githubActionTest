@@ -39,7 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_title=\"${{ github.event.pull_request.head.ref }}\"" >> $GITHUB_OUTPUT
+          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
 
       - name: output Pull Request Title
         run: |
@@ -78,7 +78,7 @@ jobs:
           # GITHUB_REPO_URL_=$(echo "${GITHUB_REPO_URL_pre:6}") 
           
           chmod +x alert.sh
-          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL ${{ steps.pr_info.outputs.pull_request_title }}
+          ./alert.sh "$SLACK_WEBHOOK_URL" $GITHUB_REPO_URL "${{ steps.pr_info.outputs.pull_request_title }}"
 
       # Update README file
       - name: Update README.md
