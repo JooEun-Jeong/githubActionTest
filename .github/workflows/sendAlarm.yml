@@ -96,17 +96,20 @@ jobs:
     needs: alert_deploy_success
     if: ${{ success() }}
     steps:
-    - uses: actions/checkout@v2
-    - name: 버전 정보 추출
-      id: extract_version_name   
-      run: |
-        echo "##[set-output name=version;]$(echo '${{ github.event.pull_request.title }}' | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
-        echo $version
+      - uses: actions/checkout@v2
+      - name: 버전 정보 추출
+        id: extract_version_name 
+        shell: bash  
+        run: |
+          VAR=$(echo '${{ github.event.pull_request.title }}' | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 
-    - name: Release 생성 
-      uses: actions/create-release@v1
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        tag_name: ${{ steps.extract_version_name.outputs.version }} 
-        release_name: ${{ steps.extract_version_name.outputs.version }} 
+          echo $VAR
+          echo "version=${VAR}" >> $GITHUB_OUTPUT
+
+      - name: Release 생성 
+        uses: actions/create-release@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          tag_name: ${{ steps.extract_version_name.outputs.version }} 
+          release_name: ${{ steps.extract_version_name.outputs.version }} 
