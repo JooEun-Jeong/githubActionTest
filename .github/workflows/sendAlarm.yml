@@ -27,6 +27,14 @@ jobs:
   #########################################
   ### 변경: 여기에 docker job을 넣어주세요 ##
   #########################################
+      - name: fail component_get pr body
+        id: failed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exit 1
+          echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+          echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
   alert_deploy_failed:
     if: ${{ failure() }} # 이전의 job이 실패했을 경우 실행됨
@@ -46,6 +54,9 @@ jobs:
         run: |
           echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
           echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          if [ steps.prepare_alert_deploy_status.steps."fail component_get pr body".status == 'failure' ];
+          then echo "mes=${{ steps.prepare_alert_deploy_status.steps."fail component_get pr body".name }}" >> $GITHUB_OUTPUT;
+          fi
 
       - name: Failed to send a slack alarm
         shell: bash
@@ -58,7 +69,7 @@ jobs:
           GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
           
           chmod +x tools/alertFailure.sh
-          tools/alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
+          tools/alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}" "${{ steps.pr_info.outputs.mes }}"
 
   alert_deploy_success:
     if: ${{ success() }} # 이전의 job이 성공했을 경우 실행됨

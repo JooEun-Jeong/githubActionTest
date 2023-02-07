@@ -2,9 +2,11 @@
 SLACK_WEBHOOK_URL=$1
 REPO_URL=$2
 PR_CONTENT=$3
+FAILD_STEP=$4
 
 MESSAGE="Deploy Failed!
 Tried to update: ${PR_CONTENT}
+Failed while doing: ${FAILD_STEP}
 Repo: ${REPO_URL}"
 
 echo $MESSAGE
