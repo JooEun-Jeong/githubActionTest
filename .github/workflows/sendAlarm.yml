@@ -93,6 +93,7 @@ jobs:
   ## only runs when alert_deploy_success job is done
   build:
     runs-on: ubuntu-latest
+    permissions: write-all
     needs: alert_deploy_success
     if: ${{ success() }}
     steps:
