@@ -27,14 +27,14 @@ jobs:
   #########################################
   ### 변경: 여기에 docker job을 넣어주세요 ##
   #########################################
-      - name: fail component_get pr body
-        id: failed
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          exit 1
-          echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
-          echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
+      # - name: fail component_get pr body
+      #   id: failed
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     exit 1
+      #     echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+      #     echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
   alert_deploy_failed:
     if: ${{ failure() }} # 이전의 job이 실패했을 경우 실행됨
