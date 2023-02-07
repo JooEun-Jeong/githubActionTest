@@ -1,5 +1,5 @@
 #변경해야 될 부분이 있습니다. ctrl+f로 "변경"을 찾아보세요.
-name: Alert Deploy Status
+name: Alert Deploy Status & Release Tag
 
 on:
   pull_request:
@@ -17,101 +17,16 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          payload: |
+          payload: | 
             {
-              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "*===UPDATE ALARM===*", "icon_emoji": ":seal:"
+              "channel": "#team2_배포상태알림", "username": "Alert Manager", "text": "*===UPDATE ALARM===*", "icon_emoji": ":seal:"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      
-  #########################################
-  ### 변경: 여기에 docker job을 넣어주세요 ##
-  #########################################
-      # - name: fail component_get pr body
-      #   id: failed
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     exit 1
-      #     echo "pull_request_body=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
-      #     echo "PR BODY: ${{ steps.failed.outputs.pull_request_body }}"
 
   alert_deploy_failed:
     if: ${{ failure() }} # 이전의 job이 실패했을 경우 실행됨
     needs: prepare_alert_deploy_status # docker job의 이름으로 변경해야됨
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: prepare to get github repo url
-        run: |
-          sudo apt install jq
-
-      # Parse PR
-      - name: get Pull Request Title
-        id: pr_info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
-          if [ steps.prepare_alert_deploy_status.steps.'fail component_get pr body'.status == 'failure' ];
-          then echo "mes=${{ steps.prepare_alert_deploy_status.steps.'fail component_get pr body'.name }}" >> $GITHUB_OUTPUT;
-          fi
-
-      - name: Failed to send a slack alarm
-        shell: bash
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPO: ${{ toJson(github) }}
-        run: |  
-          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # "와 git:// 삭제
-          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
-          
-          chmod +x tools/alertFailure.sh
-          tools/alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}" "${{ steps.pr_info.outputs.mes }}"
-
-  alert_deploy_success:
-    if: ${{ success() }} # 이전의 job이 성공했을 경우 실행됨
-    runs-on: ubuntu-latest
-    needs: prepare_alert_deploy_status # docker job의 이름으로 변경해야됨
-    steps:
-      - uses: actions/checkout@v3
-      - name: prepare to get github repo url
-        run: |
-          sudo apt install jq
-
-      # Parse PR
-      - name: get Pull Request Title
-        id: pr_info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
-          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
-
-      - name: Succeed to send a slack alarm
-        shell: bash
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPO: ${{ toJson(github) }}
-        run: |  
-          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
-          # "와 git:// 삭제
-          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
-
-          chmod +x tools/alertSuccess.sh
-          tools/alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
-
-      # # Update README file
-      # - name: Update README.md
-      #   shell: bash
-      #   run: |
-      #     chmod +x updateReadme.sh
-      #     ./updateReadme.sh
-        alert_deploy_failed:
-    if: ${{ failure() }} # 이전의 job이 실패했을 경우 실행됨
-    needs: docker-ssh-deploy # docker job의 이름으로 변경해야됨
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -144,7 +59,7 @@ jobs:
   alert_deploy_success:
     if: ${{ success() }} # 이전의 job이 성공했을 경우 실행됨
     runs-on: ubuntu-latest
-    needs: docker-ssh-deploy # docker job의 이름으로 변경해야됨
+    needs: prepare_alert_deploy_status # docker job의 이름으로 변경해야됨
     steps:
       - uses: actions/checkout@v3
       - name: prepare to get github repo url
