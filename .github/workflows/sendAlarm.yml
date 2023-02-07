@@ -19,7 +19,7 @@ jobs:
         with:
           payload: | 
             {
-              "channel": "#team2_배포상태알림", "username": "Alert Manager", "text": "*===UPDATE ALARM===*", "icon_emoji": ":seal:"
+              "channel": "#test-for-github-action", "username": "Alert Manager", "text": "*===UPDATE ALARM===*", "icon_emoji": ":seal:"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
