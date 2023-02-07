@@ -113,4 +113,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with: 
         tags: true
-        ref: "v${{ steps.extract_version_name.outputs.VERSION }} ""
+        ref: "v${{ steps.extract_version_name.outputs.VERSION }}"
