@@ -109,3 +109,87 @@ jobs:
       #   run: |
       #     chmod +x updateReadme.sh
       #     ./updateReadme.sh
+        alert_deploy_failed:
+    if: ${{ failure() }} # 이전의 job이 실패했을 경우 실행됨
+    needs: docker-ssh-deploy # docker job의 이름으로 변경해야됨
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: prepare to get github repo url
+        run: |
+          sudo apt install jq
+
+      # Parse PR
+      - name: get Pull Request Title
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+
+      - name: Failed to send a slack alarm
+        shell: bash
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_REPO: ${{ toJson(github) }}
+        run: |  
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
+          
+          chmod +x tools/alertFailure.sh
+          tools/alertFailure.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
+
+  alert_deploy_success:
+    if: ${{ success() }} # 이전의 job이 성공했을 경우 실행됨
+    runs-on: ubuntu-latest
+    needs: docker-ssh-deploy # docker job의 이름으로 변경해야됨
+    steps:
+      - uses: actions/checkout@v3
+      - name: prepare to get github repo url
+        run: |
+          sudo apt install jq
+
+      # Parse PR
+      - name: get Pull Request Title
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+
+      - name: Succeed to send a slack alarm
+        shell: bash
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_REPO: ${{ toJson(github) }}
+        run: |  
+          GITHUB_REPO_URL_w=$(echo $GITHUB_REPO | jq '.repositoryUrl')
+          # "와 git:// 삭제
+          GITHUB_REPO_URL=$(echo "${GITHUB_REPO_URL_w:7:-1}")
+
+          chmod +x tools/alertSuccess.sh
+          tools/alertSuccess.sh "$SLACK_WEBHOOK_URL" ${GITHUB_REPO_URL} "${{ steps.pr_info.outputs.pull_request_title }}"
+  
+  ## below code is from .github/releaseAction.yml
+  ## name: Release Tag
+  ## only runs when alert_deploy_success job is done
+  build:
+    runs-on: ubuntu-latest
+    needs: alert_deploy_success
+    if: ${{ success() }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: 버전 정보 추출
+      run: echo "version=$(echo '${{ github.event.head_commit.message }}' | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')" >> $GITHUB_OUTPUT
+      id: extract_version_name   
+          
+    - name: Release 생성 
+      uses: actions/create-release@v1
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        tag_name: ${{ steps.extract_version_name.outputs.version }} 
+        release_name: ${{ steps.extract_version_name.outputs.version }} 
