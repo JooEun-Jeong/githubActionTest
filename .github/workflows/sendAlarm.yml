@@ -54,8 +54,8 @@ jobs:
         run: |
           echo "pull_request_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
           echo "pull_request_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
-          if [ steps.prepare_alert_deploy_status.steps."fail component_get pr body".status == 'failure' ];
-          then echo "mes=${{ steps.prepare_alert_deploy_status.steps."fail component_get pr body".name }}" >> $GITHUB_OUTPUT;
+          if [ steps.prepare_alert_deploy_status.steps.'fail component_get pr body'.status == 'failure' ];
+          then echo "mes=${{ steps.prepare_alert_deploy_status.steps.'fail component_get pr body'.name }}" >> $GITHUB_OUTPUT;
           fi
 
       - name: Failed to send a slack alarm
